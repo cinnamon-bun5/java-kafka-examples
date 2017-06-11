@@ -26,6 +26,8 @@ public class ByteArrayConsumer implements Runnable  {
     private final KafkaConsumer<Integer, byte[]> consumer;
     private final String topic;
 
+    private boolean shutdown;
+
     public ByteArrayConsumer(String topic) {
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
@@ -51,7 +53,7 @@ public class ByteArrayConsumer implements Runnable  {
             KafkaMessage message;
             ConsumerRecords<Integer, byte[]> records;
 
-            while (true) {
+            while (!shutdown) {
 
                 records = consumer.poll(1000);
 
@@ -79,5 +81,9 @@ public class ByteArrayConsumer implements Runnable  {
             consumer.close();
         }
 
+    }
+
+    public void shutdown() {
+        shutdown = true;
     }
 }

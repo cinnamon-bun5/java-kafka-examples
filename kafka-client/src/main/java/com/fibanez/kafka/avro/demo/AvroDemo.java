@@ -34,11 +34,16 @@ public class AvroDemo {
 
         LOGGER.info("Starting avro demo");
 
-        executor.submit(new AvroConsumer(topic));
-        executor.submit(new AvroProducer(topic,asyn));
+        AvroConsumer consumer = new AvroConsumer(topic);
+        AvroProducer producer = new AvroProducer(topic,asyn);
 
-        TimeUnit.SECONDS.sleep(10);
+        executor.submit(consumer);
+        executor.submit(producer);
 
+        TimeUnit.SECONDS.sleep(5);
+
+        consumer.shutdown();
+        producer.shutdown();
         shutdown();
 
         LOGGER.info("Finished avro demo");
@@ -59,7 +64,7 @@ public class AvroDemo {
                 LOGGER.error("cancel non-finished tasks");
             }
             executor.shutdownNow();
-            LOGGER.error("shutdown finished");
+            LOGGER.info("shutdown finished");
         }
 
     }

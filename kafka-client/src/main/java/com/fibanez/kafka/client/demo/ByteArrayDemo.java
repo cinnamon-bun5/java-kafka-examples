@@ -32,10 +32,16 @@ public class ByteArrayDemo {
 
         LOGGER.info("Starting byte array demo");
 
-        executor.submit(new ByteArrayConsumer(topic));
-        executor.submit(new ByteArrayProducer(topic,asyn));
+        ByteArrayConsumer consumer = new ByteArrayConsumer(topic);
+        ByteArrayProducer producer = new ByteArrayProducer(topic,asyn);
+
+        executor.submit(consumer);
+        executor.submit(producer);
 
         TimeUnit.SECONDS.sleep(10);
+
+        consumer.shutdown();
+        producer.shutdown();
 
         shutdown();
 
@@ -57,7 +63,7 @@ public class ByteArrayDemo {
                 LOGGER.error("cancel non-finished tasks");
             }
             executor.shutdownNow();
-            LOGGER.error("shutdown finished");
+            LOGGER.info("shutdown finished");
         }
 
     }

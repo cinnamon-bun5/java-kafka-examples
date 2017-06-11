@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by fibanez on 10/6/17.
@@ -82,6 +83,10 @@ public class ByteArrayProducer implements Runnable {
             }
             ++messageNo;
         }
+    }
+
+    public void shutdown() {
+        producer.close(5, TimeUnit.SECONDS);
     }
 }
 

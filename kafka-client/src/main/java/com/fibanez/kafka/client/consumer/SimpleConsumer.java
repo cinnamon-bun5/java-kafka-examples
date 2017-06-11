@@ -22,6 +22,8 @@ public class SimpleConsumer implements Runnable  {
     private final KafkaConsumer<Integer, String> consumer;
     private final String topic;
 
+    private boolean shutdown;
+
     public SimpleConsumer (String topic) {
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
@@ -46,7 +48,7 @@ public class SimpleConsumer implements Runnable  {
 
             ConsumerRecords<Integer, String> records;
 
-            while (true) {
+            while (!shutdown) {
 
                 records = consumer.poll(1000);
 
@@ -71,6 +73,9 @@ public class SimpleConsumer implements Runnable  {
         } finally {
             consumer.close();
         }
+    }
 
+    public void shutdown() {
+        shutdown = true;
     }
 }

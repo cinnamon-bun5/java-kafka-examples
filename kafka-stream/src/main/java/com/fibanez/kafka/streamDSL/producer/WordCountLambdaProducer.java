@@ -1,20 +1,22 @@
-package com.fibanez.kafka.client.producer;
+package com.fibanez.kafka.streamDSL.producer;
 
 import org.apache.kafka.clients.producer.*;
+import org.apache.kafka.common.serialization.IntegerSerializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.Properties;
-import java.util.concurrent.ExecutionException;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Created by fibanez on 10/6/17.
  */
-public class SimpleProducer implements Runnable {
+public class WordCountLambdaProducer implements Runnable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleProducer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WordCountLambdaProducer.class);
 
     private final KafkaProducer<Integer, String> producer;
     private final String topic;
@@ -22,12 +24,14 @@ public class SimpleProducer implements Runnable {
 
     private static String ssl_pwd ="{pwd}";
 
-    public SimpleProducer(String topic, Boolean isAsync) {
+    final Random random = new Random();
+
+    public WordCountLambdaProducer(String topic, Boolean isAsync) {
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        props.put(ProducerConfig.CLIENT_ID_CONFIG, "ByteArrayProducer");
-        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.IntegerSerializer");
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+        props.put(ProducerConfig.CLIENT_ID_CONFIG, "WordCountLambdaProducer");
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, IntegerSerializer.class.getName());
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 
         // SSL CONFIGURATION
         /*
@@ -49,23 +53,26 @@ public class SimpleProducer implements Runnable {
     @Override
     public void run() {
         int messageNo = 1;
+        String[] arryMsgStr = new String[] {"Hello World, I am testing kafka", "hello world how are you?"};
+
         while ( messageNo < 5 ) {
             try {
-                String messageStr = "Message_" + messageNo;
+                int index = random.nextInt(2);
+
 
                 if (isAsync) { // Send asynchronously
                     producer.send(new ProducerRecord<>(
                             topic,
                             messageNo,
-                            messageStr), new SimpleCallBack(messageNo, messageStr));
+                            arryMsgStr[index]), new WordCountLambdaCallBack(messageNo, arryMsgStr[index]));
                 }
                 else { // Send synchronously
                     producer.send(new ProducerRecord<>(
                             topic,
                             messageNo,
-                            messageStr)).get();
+                            arryMsgStr[index])).get();
 
-                    LOGGER.info("Sent message: (" + messageNo + ", " + messageStr + ")");
+                    LOGGER.info("Sent message: (" + messageNo + ", " + arryMsgStr[index] + ")");
                 }
             }
             catch (Exception e) {
@@ -81,14 +88,14 @@ public class SimpleProducer implements Runnable {
 }
 
 
-class SimpleCallBack implements Callback {
+class WordCountLambdaCallBack implements Callback {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleCallBack.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WordCountLambdaCallBack.class);
 
     private final int key;
     private final String message;
 
-    public SimpleCallBack(int key, String message) {
+    public WordCountLambdaCallBack(int key, String message) {
         this.key = key;
         this.message = message;
     }

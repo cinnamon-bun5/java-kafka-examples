@@ -32,11 +32,16 @@ public class SimpleDemo {
 
         LOGGER.info("Starting simple demo");
 
-        executor.submit(new SimpleConsumer(topic));
-        executor.submit(new SimpleProducer(topic,asyn));
+        SimpleConsumer consumer = new SimpleConsumer(topic);
+        SimpleProducer producer = new SimpleProducer(topic,asyn);
+
+        executor.submit(consumer);
+        executor.submit(producer);
 
         TimeUnit.SECONDS.sleep(5);
 
+        consumer.shutdown();
+        producer.shutdown();
         shutdown();
 
         LOGGER.info("Finished simple demo");
@@ -57,7 +62,7 @@ public class SimpleDemo {
                 LOGGER.error("cancel non-finished tasks");
             }
             executor.shutdownNow();
-            LOGGER.error("shutdown finished");
+            LOGGER.info("shutdown finished");
         }
 
     }
