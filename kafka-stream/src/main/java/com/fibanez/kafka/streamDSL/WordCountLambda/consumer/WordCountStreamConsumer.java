@@ -1,4 +1,4 @@
-package com.fibanez.kafka.streamDSL.WordCountLambda.consumer;
+package com.fibanez.kafka.streamDSL.wordCountLambda.consumer;
 
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;

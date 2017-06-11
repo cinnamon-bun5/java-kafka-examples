@@ -1,4 +1,4 @@
-package com.fibanez.kafka.streamDSL.WordCountLambda.consumer;
+package com.fibanez.kafka.streamDSL.wordCountLambda.consumer;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -28,7 +28,7 @@ public class WordCountSinkConsumer implements Runnable  {
     public WordCountSinkConsumer(String topic) {
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "wordcount-lambda-consumer-group");
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "wordcount-lambda-sink-consumer-group");
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
         props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
         props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "30000");

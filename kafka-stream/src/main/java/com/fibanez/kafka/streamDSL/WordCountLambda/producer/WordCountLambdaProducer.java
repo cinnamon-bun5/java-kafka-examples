@@ -1,4 +1,4 @@
-package com.fibanez.kafka.streamDSL.WordCountLambda.producer;
+package com.fibanez.kafka.streamDSL.wordCountLambda.producer;
 
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.IntegerSerializer;
@@ -52,6 +52,9 @@ public class WordCountLambdaProducer implements Runnable {
 
     @Override
     public void run() {
+
+        LOGGER.info("Running WordCountLambda Producer to send mesages to "+ topic);
+
         int messageNo = 1;
         String[] arryMsgStr = new String[] {"Hello World, I am testing kafka", "hello world how are you?"};
 
@@ -59,17 +62,17 @@ public class WordCountLambdaProducer implements Runnable {
             try {
                 int index = random.nextInt(2);
 
-
+                // Using module 2, even number of messages will go to same partition
                 if (isAsync) { // Send asynchronously
                     producer.send(new ProducerRecord<>(
                             topic,
-                            messageNo,
+                            messageNo % 2,
                             arryMsgStr[index]), new WordCountLambdaCallBack(messageNo, arryMsgStr[index]));
                 }
                 else { // Send synchronously
                     producer.send(new ProducerRecord<>(
                             topic,
-                            messageNo,
+                            messageNo % 2,
                             arryMsgStr[index])).get();
 
                     LOGGER.info("Sent message: (" + messageNo + ", " + arryMsgStr[index] + ")");

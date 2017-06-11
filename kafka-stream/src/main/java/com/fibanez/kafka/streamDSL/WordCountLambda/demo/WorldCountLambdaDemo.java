@@ -1,8 +1,9 @@
-package com.fibanez.kafka.streamDSL.WordCountLambda.demo;
+package com.fibanez.kafka.streamDSL.wordCountLambda.demo;
 
-import com.fibanez.kafka.streamDSL.WordCountLambda.consumer.WordCountLambdaConsumer;
-import com.fibanez.kafka.streamDSL.WordCountLambda.consumer.WordCountLambdaStreamConsumer;
-import com.fibanez.kafka.streamDSL.WordCountLambda.producer.WordCountLambdaProducer;
+import com.fibanez.kafka.streamDSL.wordCountLambda.consumer.WordCountSimpleConsumer;
+import com.fibanez.kafka.streamDSL.wordCountLambda.consumer.WordCountSinkConsumer;
+import com.fibanez.kafka.streamDSL.wordCountLambda.consumer.WordCountStreamConsumer;
+import com.fibanez.kafka.streamDSL.wordCountLambda.producer.WordCountLambdaProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,13 +18,13 @@ public class WorldCountLambdaDemo {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WorldCountLambdaDemo.class);
 
-    private  ExecutorService executor = Executors.newFixedThreadPool(2);
+    private  ExecutorService executor = Executors.newFixedThreadPool(4);
 
     public static void main(String[] args) {
 
         try {
             WorldCountLambdaDemo demo = new WorldCountLambdaDemo();
-            demo.start("worldCountLambdaSource", "worldCountLambdaSink", true);
+            demo.start("worldCountLambdaSource", "worldCountLambdaSink", false);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -33,19 +34,22 @@ public class WorldCountLambdaDemo {
 
         LOGGER.info("Starting world count lambda demo");
 
+        // Client
         WordCountLambdaProducer producer = new WordCountLambdaProducer(sourceTopic,asyn);
-        WordCountLambdaStreamConsumer streamConsumer = new WordCountLambdaStreamConsumer(sourceTopic, sinkTopic);
-        WordCountLambdaConsumer sinkConsumer = new WordCountLambdaConsumer(sinkTopic);
+        WordCountSimpleConsumer simpleConsumer = new WordCountSimpleConsumer(sourceTopic);
 
+        // Stream
+        WordCountStreamConsumer streamConsumer = new WordCountStreamConsumer(sourceTopic, sinkTopic);
+        WordCountSinkConsumer sinkConsumer = new WordCountSinkConsumer(sinkTopic);
+
+        executor.submit(simpleConsumer);
         executor.submit(streamConsumer);
         executor.submit(sinkConsumer);
-
-        TimeUnit.SECONDS.sleep(2);
-
         executor.submit(producer);
 
-        TimeUnit.SECONDS.sleep(10);
+        TimeUnit.SECONDS.sleep(20);
 
+        simpleConsumer.shutdown();
         streamConsumer.shutdown();
         sinkConsumer.shutdown();
         producer.shutdown();
