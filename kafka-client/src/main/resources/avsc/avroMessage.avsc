@@ -1,0 +1,11 @@
+{"namespace": "com.fibanez.kafka.avro.model",
+    "type": "record",
+    "name": "MessageAvro",
+    "fields":[
+        {"name": "id", "type":"long"},
+        {"name": "message", "type": "string"},
+        {"name": "timestamp", "type":"long"},
+        {"name": "error", "type": ["string", "null"]},
+        {"name": "errorCode", "type": ["long", "null"]}
+    ]
+}

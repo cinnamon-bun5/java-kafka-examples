@@ -55,21 +55,20 @@ public class ByteArrayProducer implements Runnable {
         KafkaMessage message;
 
         while ( messageNo < 5 ) {
+            try {
+                message = new KafkaMessage();
+                message.setMessageId((long) messageNo);
+                message.setMessage("Message_" + messageNo);
 
-            message = new KafkaMessage();
-            message.setMessageId((long) messageNo);
-            message.setMessage("Message_" + messageNo);
+                byte[] data = SerializationUtils.serialize(message);
 
-            byte[] data = SerializationUtils.serialize(message);
-
-            if (isAsync) { // Send asynchronously
-                producer.send(new ProducerRecord<>(
-                        topic,
-                        messageNo,
-                        data), new ByteArrayCallBack(messageNo, message));
-            }
-            else { // Send synchronously
-                try {
+                if (isAsync) { // Send asynchronously
+                    producer.send(new ProducerRecord<>(
+                            topic,
+                            messageNo,
+                            data), new ByteArrayCallBack(messageNo, message));
+                }
+                else { // Send synchronously
                     producer.send(new ProducerRecord<>(
                             topic,
                             messageNo,
@@ -77,9 +76,9 @@ public class ByteArrayProducer implements Runnable {
 
                     LOGGER.info("Sent message: (" + messageNo + ", " + message + ")");
                 }
-                catch (Exception e) {
-                    LOGGER.error(e.getMessage(), e);
-                }
+            }
+            catch (Exception e) {
+                LOGGER.error(e.getMessage(), e);
             }
             ++messageNo;
         }

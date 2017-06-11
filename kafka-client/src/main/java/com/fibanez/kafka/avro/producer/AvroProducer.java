@@ -1,32 +1,34 @@
-package com.fibanez.kafka.client.producer;
+package com.fibanez.kafka.avro.producer;
 
+import com.fibanez.kafka.avro.model.MessageAvro;
+import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import org.apache.kafka.clients.producer.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.Properties;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Created by fibanez on 10/6/17.
  */
-public class SimpleProducer implements Runnable {
+public class AvroProducer implements Runnable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleProducer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AvroProducer.class);
 
-    private final KafkaProducer<Integer, String> producer;
+    private final KafkaProducer<Integer, MessageAvro> producer;
     private final String topic;
     private final Boolean isAsync;
 
     private static String ssl_pwd ="{pwd}";
 
-    public SimpleProducer(String topic, Boolean isAsync) {
+    public AvroProducer(String topic, Boolean isAsync) {
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         props.put(ProducerConfig.CLIENT_ID_CONFIG, "ByteArrayProducer");
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.IntegerSerializer");
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class.getName());
+        props.put("schema.registry.url", "http://localhost:8081");
 
         // SSL CONFIGURATION
         /*
@@ -50,24 +52,31 @@ public class SimpleProducer implements Runnable {
         int messageNo = 1;
         while ( messageNo < 5 ) {
             try {
-                String messageStr = "Message_" + messageNo;
+                MessageAvro messageAvro = MessageAvro.newBuilder()
+                        .setId(messageNo)
+                        .setMessage("Message_" + messageNo)
+                        .setTimestamp(System.currentTimeMillis())
+                        .setError(null)
+                        .setErrorCode(null)
+                        .build();
 
+                // Using module 2, even number of messages will go to same partition
                 if (isAsync) { // Send asynchronously
                     producer.send(new ProducerRecord<>(
                             topic,
-                            messageNo,
-                            messageStr), new SimpleCallBack(messageNo, messageStr));
-                }
-                else { // Send synchronously
+                            messageNo % 2,
+                            messageAvro), new AvroCallBack(messageNo, messageAvro));
+                } else { // Send synchronously
+
                     producer.send(new ProducerRecord<>(
                             topic,
-                            messageNo,
-                            messageStr)).get();
+                            messageNo % 2,
+                            messageAvro)).get();
 
-                    LOGGER.info("Sent message: (" + messageNo + ", " + messageStr + ")");
+                    LOGGER.info("Sent message: (" + messageNo + ", " + messageAvro + ")");
                 }
             }
-            catch (Exception e) {
+            catch(Exception e){
                 LOGGER.error(e.getMessage(), e);
             }
             ++messageNo;
@@ -76,16 +85,16 @@ public class SimpleProducer implements Runnable {
 }
 
 
-class SimpleCallBack implements Callback {
+class AvroCallBack implements Callback {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleCallBack.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AvroCallBack.class);
 
     private final int key;
-    private final String message;
+    private final MessageAvro messageAvro;
 
-    public SimpleCallBack(int key, String message) {
+    public AvroCallBack(int key, MessageAvro messageAvro) {
         this.key = key;
-        this.message = message;
+        this.messageAvro = messageAvro;
     }
     /**
      * A callback method the user can implement to provide asynchronous handling of request completion. This method will
@@ -101,7 +110,7 @@ class SimpleCallBack implements Callback {
             long elapsedTime = System.currentTimeMillis() - metadata.timestamp();
             LOGGER.info(
                     "Sent message: topic = {}, partition = {}, offset = {}, timestamp = {} in {} ms \n Sent message({},{})",
-                    metadata.topic(), metadata.partition(), metadata.offset(), new Date(metadata.timestamp()), elapsedTime, key, message);
+                    metadata.topic(), metadata.partition(), metadata.offset(), new Date(metadata.timestamp()), elapsedTime, key, messageAvro);
         } else {
             LOGGER.error(exception.getMessage(), exception);
         }
