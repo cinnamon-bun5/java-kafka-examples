@@ -1,4 +1,4 @@
-package com.fibanez.kafka.streamDSL.producer;
+package com.fibanez.kafka.streamDSL.WordCountLambda.producer;
 
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.IntegerSerializer;

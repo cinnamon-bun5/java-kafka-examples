@@ -1,4 +1,4 @@
-package com.fibanez.kafka.streamDSL.consumer;
+package com.fibanez.kafka.streamDSL.WordCountLambda.consumer;
 
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
@@ -18,16 +18,16 @@ import java.util.regex.Pattern;
 /**
  * Created by fibanez on 11/6/17.
  */
-public class WordCountLambdaStreamConsumer implements Runnable  {
+public class WordCountStreamConsumer implements Runnable  {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(WordCountLambdaStreamConsumer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WordCountStreamConsumer.class);
 
     private final KafkaStreams streams;
 
     private final String topic;
     private final String outTopic;
 
-    public WordCountLambdaStreamConsumer(String topic, String outTopic) {
+    public WordCountStreamConsumer(String topic, String outTopic) {
         Properties props = new Properties();
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, "wordcount-lambda-consumer-id");

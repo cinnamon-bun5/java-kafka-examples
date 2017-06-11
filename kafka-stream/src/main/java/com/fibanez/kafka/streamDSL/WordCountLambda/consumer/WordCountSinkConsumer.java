@@ -1,33 +1,31 @@
-package com.fibanez.kafka.streamDSL.consumer;
+package com.fibanez.kafka.streamDSL.WordCountLambda.consumer;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.errors.WakeupException;
-import org.apache.kafka.common.serialization.IntegerDeserializer;
 import org.apache.kafka.common.serialization.LongDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
-import java.util.Date;
 import java.util.Properties;
 
 /**
  * Created by fibanez on 11/6/17.
  */
-public class WordCountLambdaConsumer implements Runnable  {
+public class WordCountSinkConsumer implements Runnable  {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(WordCountLambdaConsumer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WordCountSinkConsumer.class);
 
     private final KafkaConsumer<String, Integer> consumer;
     private final String topic;
 
     private boolean shutdown;
 
-    public WordCountLambdaConsumer(String topic) {
+    public WordCountSinkConsumer(String topic) {
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "wordcount-lambda-consumer-group");
