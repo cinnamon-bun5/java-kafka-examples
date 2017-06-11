@@ -1,4 +1,4 @@
-package com.fibanez.kafka.streamDSL.wordCountLambda.consumer;
+package com.fibanez.kafka.streamDSL.wordCount.consumer;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;

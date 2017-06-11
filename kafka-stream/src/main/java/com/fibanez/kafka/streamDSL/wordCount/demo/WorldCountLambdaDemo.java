@@ -1,9 +1,9 @@
-package com.fibanez.kafka.streamDSL.wordCountLambda.demo;
+package com.fibanez.kafka.streamDSL.wordCount.demo;
 
-import com.fibanez.kafka.streamDSL.wordCountLambda.consumer.WordCountSimpleConsumer;
-import com.fibanez.kafka.streamDSL.wordCountLambda.consumer.WordCountSinkConsumer;
-import com.fibanez.kafka.streamDSL.wordCountLambda.consumer.WordCountStreamConsumer;
-import com.fibanez.kafka.streamDSL.wordCountLambda.producer.WordCountLambdaProducer;
+import com.fibanez.kafka.streamDSL.wordCount.consumer.WordCountSimpleConsumer;
+import com.fibanez.kafka.streamDSL.wordCount.consumer.WordCountSinkConsumer;
+import com.fibanez.kafka.streamDSL.wordCount.producer.WordCountLambdaProducer;
+import com.fibanez.kafka.streamDSL.wordCount.consumer.WordCountStreamConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
