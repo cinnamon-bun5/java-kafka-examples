@@ -30,6 +30,9 @@ public class ByteArrayDemo {
 
     public void start(String topic, boolean asyn) throws InterruptedException {
 
+        // ctrl-c kill
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> { shutdown(); }));
+
         LOGGER.info("Starting byte array demo");
 
         ByteArrayConsumer consumer = new ByteArrayConsumer(topic);
@@ -41,11 +44,12 @@ public class ByteArrayDemo {
         TimeUnit.SECONDS.sleep(10);
 
         consumer.shutdown();
-        producer.shutdown();
+//        producer.shutdown();
 
         shutdown();
 
         LOGGER.info("Finished byte array demo");
+
 
         System.exit(0);
     }

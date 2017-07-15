@@ -30,6 +30,9 @@ public class SimpleDemo {
 
     public void start(String topic, boolean asyn) throws InterruptedException {
 
+        // ctrl-c kill
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> { shutdown(); }));
+
         LOGGER.info("Starting simple demo");
 
         SimpleConsumer consumer = new SimpleConsumer(topic);
@@ -41,7 +44,7 @@ public class SimpleDemo {
         TimeUnit.SECONDS.sleep(5);
 
         consumer.shutdown();
-        producer.shutdown();
+//        producer.shutdown();
         shutdown();
 
         LOGGER.info("Finished simple demo");

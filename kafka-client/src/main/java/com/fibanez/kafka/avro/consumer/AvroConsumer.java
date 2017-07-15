@@ -1,15 +1,14 @@
 package com.fibanez.kafka.avro.consumer;
 
 import com.fibanez.kafka.avro.model.MessageAvro;
+import com.fibanez.kafka.utils.StoppableRunnable;
 import com.fibanez.kafka.client.model.KafkaMessage;
 import io.confluent.kafka.serializers.KafkaAvroDeserializer;
-import org.apache.commons.lang3.SerializationUtils;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.errors.WakeupException;
-import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.IntegerDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,17 +16,21 @@ import org.slf4j.LoggerFactory;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Properties;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by fibanez on 10/6/17.
  */
-public class AvroConsumer implements Runnable  {
+public class AvroConsumer implements StoppableRunnable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AvroConsumer.class);
 
     private final KafkaConsumer<Integer, MessageAvro> consumer;
     private final String topic;
-    private boolean shutdown;
+    private AtomicBoolean shutdown = new AtomicBoolean(false);
+    private CountDownLatch shutdownLatch = new CountDownLatch(1);
 
     public AvroConsumer(String topic) {
         Properties props = new Properties();
@@ -58,7 +61,7 @@ public class AvroConsumer implements Runnable  {
             KafkaMessage message;
             ConsumerRecords<Integer, MessageAvro> records;
 
-            while (!shutdown) {
+            while (!shutdown.get()) {
 
                 records = consumer.poll(1000);
 
@@ -81,11 +84,18 @@ public class AvroConsumer implements Runnable  {
             LOGGER.error("Unexpected error", t);
         } finally {
             consumer.close();
+            shutdownLatch.countDown();
         }
-
     }
 
+    @Override
     public void shutdown() {
-        shutdown = true;
+        try {
+            shutdown.set(true);
+            consumer.wakeup();
+            shutdownLatch.await(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            LOGGER.error("Error", e);
+        }
     }
 }

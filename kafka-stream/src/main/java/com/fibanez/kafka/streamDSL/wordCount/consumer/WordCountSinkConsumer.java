@@ -12,6 +12,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.Properties;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by fibanez on 11/6/17.
@@ -23,7 +26,8 @@ public class WordCountSinkConsumer implements Runnable  {
     private final KafkaConsumer<String, Integer> consumer;
     private final String topic;
 
-    private boolean shutdown;
+    private AtomicBoolean shutdown = new AtomicBoolean(false);
+    private CountDownLatch shutdownLatch = new CountDownLatch(1);
 
     public WordCountSinkConsumer(String topic) {
         Properties props = new Properties();
@@ -47,7 +51,7 @@ public class WordCountSinkConsumer implements Runnable  {
         try {
             ConsumerRecords<String, Integer> records;
 
-            while (!shutdown) {
+            while (!shutdown.get()) {
 
                 records = consumer.poll(1000);
 
@@ -67,10 +71,17 @@ public class WordCountSinkConsumer implements Runnable  {
             LOGGER.error("Unexpected error", t);
         } finally {
             consumer.close();
+            shutdownLatch.countDown();
         }
     }
 
     public void shutdown() {
-        shutdown = true;
+        try {
+            shutdown.set(true);
+            consumer.wakeup();
+            shutdownLatch.await(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            LOGGER.error("Error", e);
+        }
     }
 }

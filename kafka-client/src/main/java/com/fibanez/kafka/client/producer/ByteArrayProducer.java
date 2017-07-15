@@ -1,5 +1,6 @@
 package com.fibanez.kafka.client.producer;
 
+import com.fibanez.kafka.utils.StoppableRunnable;
 import com.fibanez.kafka.client.model.KafkaMessage;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.kafka.clients.producer.*;
@@ -15,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by fibanez on 10/6/17.
  */
-public class ByteArrayProducer implements Runnable {
+public class ByteArrayProducer implements StoppableRunnable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ByteArrayProducer.class);
 
@@ -83,8 +84,11 @@ public class ByteArrayProducer implements Runnable {
             }
             ++messageNo;
         }
+
+        shutdown();
     }
 
+    @Override
     public void shutdown() {
         producer.close(5, TimeUnit.SECONDS);
     }

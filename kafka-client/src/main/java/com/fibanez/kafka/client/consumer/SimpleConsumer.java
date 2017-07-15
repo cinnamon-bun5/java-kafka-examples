@@ -1,5 +1,6 @@
 package com.fibanez.kafka.client.consumer;
 
+import com.fibanez.kafka.utils.StoppableRunnable;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -11,18 +12,22 @@ import org.slf4j.LoggerFactory;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Properties;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by fibanez on 10/6/17.
  */
-public class SimpleConsumer implements Runnable  {
+public class SimpleConsumer implements StoppableRunnable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleConsumer.class);
 
     private final KafkaConsumer<Integer, String> consumer;
     private final String topic;
 
-    private boolean shutdown;
+    private AtomicBoolean shutdown = new AtomicBoolean(false);
+    private CountDownLatch shutdownLatch = new CountDownLatch(1);
 
     public SimpleConsumer (String topic) {
         Properties props = new Properties();
@@ -48,7 +53,7 @@ public class SimpleConsumer implements Runnable  {
 
             ConsumerRecords<Integer, String> records;
 
-            while (!shutdown) {
+            while (!shutdown.get()) {
 
                 records = consumer.poll(1000);
 
@@ -72,10 +77,18 @@ public class SimpleConsumer implements Runnable  {
             LOGGER.error("Unexpected error", t);
         } finally {
             consumer.close();
+            shutdownLatch.countDown();
         }
     }
 
+    @Override
     public void shutdown() {
-        shutdown = true;
+        try {
+            shutdown.set(true);
+            consumer.wakeup();
+            shutdownLatch.await(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            LOGGER.error("Error", e);
+        }
     }
 }

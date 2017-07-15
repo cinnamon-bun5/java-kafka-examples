@@ -1,5 +1,6 @@
 package com.fibanez.kafka.streamDSL.wordCount.producer;
 
+import com.fibanez.kafka.utils.StoppableRunnable;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.IntegerSerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -14,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by fibanez on 10/6/17.
  */
-public class WordCountLambdaProducer implements Runnable {
+public class WordCountLambdaProducer implements StoppableRunnable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WordCountLambdaProducer.class);
 
@@ -85,6 +86,7 @@ public class WordCountLambdaProducer implements Runnable {
         }
     }
 
+    @Override
     public void shutdown() {
         producer.close(5, TimeUnit.SECONDS);
     }

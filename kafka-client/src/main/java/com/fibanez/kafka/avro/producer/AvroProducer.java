@@ -1,6 +1,7 @@
 package com.fibanez.kafka.avro.producer;
 
 import com.fibanez.kafka.avro.model.MessageAvro;
+import com.fibanez.kafka.utils.StoppableRunnable;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import org.apache.kafka.clients.producer.*;
 import org.slf4j.Logger;
@@ -13,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by fibanez on 10/6/17.
  */
-public class AvroProducer implements Runnable {
+public class AvroProducer implements StoppableRunnable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AvroProducer.class);
 
@@ -82,8 +83,11 @@ public class AvroProducer implements Runnable {
             }
             ++messageNo;
         }
+
+        shutdown();
     }
 
+    @Override
     public void shutdown() {
         producer.close(5, TimeUnit.SECONDS);
     }

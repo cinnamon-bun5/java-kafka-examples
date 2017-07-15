@@ -32,6 +32,9 @@ public class WorldCountLambdaDemo {
 
     public void start(String sourceTopic, String sinkTopic, boolean asyn) throws InterruptedException {
 
+        // ctrl-c kill
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {shutdown(); }));
+
         LOGGER.info("Starting world count lambda demo");
 
         // Client

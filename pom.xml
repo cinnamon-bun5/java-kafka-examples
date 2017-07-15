@@ -57,6 +57,13 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>22.0</version>
+        </dependency>
+
+
         <!--LOGGING-->
         <dependency>
             <groupId>org.slf4j</groupId>

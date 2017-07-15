@@ -1,5 +1,6 @@
 package com.fibanez.kafka.client.consumer;
 
+import com.fibanez.kafka.utils.StoppableRunnable;
 import com.fibanez.kafka.client.model.KafkaMessage;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -15,18 +16,22 @@ import org.slf4j.LoggerFactory;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Properties;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by fibanez on 10/6/17.
  */
-public class ByteArrayConsumer implements Runnable  {
+public class ByteArrayConsumer implements StoppableRunnable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ByteArrayConsumer.class);
 
     private final KafkaConsumer<Integer, byte[]> consumer;
     private final String topic;
+    private CountDownLatch shutdownLatch = new CountDownLatch(1);
 
-    private boolean shutdown;
+    private AtomicBoolean shutdown = new AtomicBoolean(false);
 
     public ByteArrayConsumer(String topic) {
         Properties props = new Properties();
@@ -53,7 +58,7 @@ public class ByteArrayConsumer implements Runnable  {
             KafkaMessage message;
             ConsumerRecords<Integer, byte[]> records;
 
-            while (!shutdown) {
+            while (!shutdown.get()) {
 
                 records = consumer.poll(1000);
 
@@ -79,11 +84,19 @@ public class ByteArrayConsumer implements Runnable  {
             LOGGER.error("Unexpected error", t);
         } finally {
             consumer.close();
+            shutdownLatch.countDown();
         }
 
     }
 
+    @Override
     public void shutdown() {
-        shutdown = true;
+        try {
+            shutdown.set(true);
+            consumer.wakeup();
+            shutdownLatch.await(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            LOGGER.error("Error", e);
+        }
     }
 }

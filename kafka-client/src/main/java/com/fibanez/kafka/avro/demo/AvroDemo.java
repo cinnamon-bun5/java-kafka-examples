@@ -32,6 +32,9 @@ public class AvroDemo {
 
     public void start(String topic, boolean asyn) throws InterruptedException {
 
+        // ctrl-c kill
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> { shutdown();}));
+
         LOGGER.info("Starting avro demo");
 
         AvroConsumer consumer = new AvroConsumer(topic);
@@ -43,7 +46,7 @@ public class AvroDemo {
         TimeUnit.SECONDS.sleep(5);
 
         consumer.shutdown();
-        producer.shutdown();
+//        producer.shutdown();
         shutdown();
 
         LOGGER.info("Finished avro demo");
