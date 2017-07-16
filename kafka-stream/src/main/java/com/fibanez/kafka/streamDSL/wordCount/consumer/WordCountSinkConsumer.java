@@ -59,9 +59,9 @@ public class WordCountSinkConsumer implements Runnable  {
                     LOGGER.info("Number of Records = " + records.count());
                 }
 
-                for (ConsumerRecord<String, Integer> record : records) {
-                    LOGGER.info("Received message ({},{}) ", record.key(), record.value());
-                }
+                records.forEach( r ->
+                        LOGGER.info("Received message ({},{}) ", r.key(), r.value())
+                );
             }
 
         } catch (WakeupException e) {

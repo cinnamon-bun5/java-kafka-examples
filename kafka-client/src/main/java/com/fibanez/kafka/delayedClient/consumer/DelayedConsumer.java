@@ -60,39 +60,35 @@ public class DelayedConsumer implements StoppableRunnable {
 
         try {
 
-            KafkaDelayedMessage message;
-            ConsumerRecords<Integer, byte[]> records;
-
             if (!shutdown.get()) {
 
                 consumer.resume(consumer.assignment());
 
-                records = consumer.poll(10000);
+                ConsumerRecords<Integer, byte[]> records = consumer.poll(10000);
 
                 if (records.count() > 0) {
                     LOGGER.info("Number of Records = " + records.count());
                 }
 
-                for (ConsumerRecord<Integer, byte[]> record : records) {
-
-                    message = (KafkaDelayedMessage) SerializationUtils.deserialize(record.value());
+                records.forEach( r -> {
+                    KafkaDelayedMessage message = (KafkaDelayedMessage) SerializationUtils.deserialize(r.value());
 
                     if (message.getDelayTo() < System.currentTimeMillis()) {
                         LOGGER.info(
                                 "Consume message {} with delayTo {} : partition = {}, offset = {}, timestamp = {}",
-                                record.key(), new Date(message.getDelayTo()), record.partition(), record.offset(), new Date(record.timestamp())
+                                r.key(), new Date(message.getDelayTo()), r.partition(), r.offset(), new Date(r.timestamp())
                         );
                     } else {
-                        LOGGER.info("Requeue message {} with delayTo {} to: topic = {}",  record.key(), new Date(message.getDelayTo()), record.topic());
+                        LOGGER.info("Requeue message {} with delayTo {} to: topic = {}",  r.key(), new Date(message.getDelayTo()), r.topic());
                         try {
-                            LOGGER.debug("Record {} requeue to: topic = {}", record.key(), record.topic());
+                            LOGGER.debug("Record {} requeue to: topic = {}", r.key(), r.topic());
 
-                            producer.send(new ProducerRecord<>( record.topic(), record.key(), record.value())).get();
+                            producer.send(new ProducerRecord<>( r.topic(), r.key(), r.value())).get();
                         } catch (Exception e) {
                             LOGGER.error(e.getMessage(), e);
                         }
                     }
-                }
+                });
 
                 LOGGER.info("consumer paused\n\n\n\n");
                 consumer.pause(consumer.assignment());

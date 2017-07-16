@@ -60,9 +60,9 @@ public class WordCountSimpleConsumer implements StoppableRunnable {
                     LOGGER.info("Number of Records = " + records.count());
                 }
 
-                for (ConsumerRecord<Integer, String> record : records) {
-                    LOGGER.info("Received message ({},{}) ", record.key(), record.value());
-                }
+                records.forEach( r ->
+                    LOGGER.info("Received message ({},{}) ", r.key(), r.value())
+                );
             }
 
         } catch (WakeupException e) {

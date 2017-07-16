@@ -58,7 +58,6 @@ public class AvroConsumer implements StoppableRunnable {
 
         try {
 
-            KafkaMessage message;
             ConsumerRecords<Integer, MessageAvro> records;
 
             while (!shutdown.get()) {
@@ -69,12 +68,12 @@ public class AvroConsumer implements StoppableRunnable {
                     LOGGER.info("Number of Records = " + records.count());
                 }
 
-                for (ConsumerRecord<Integer, MessageAvro> record : records) {
-                    LOGGER.info(
+                records.forEach( r ->
+                        LOGGER.info(
                             "Received message: topic = {}, partition = {}, offset = {}, timestamp = {} \n Received message({},{}) ",
-                            record.topic(), record.partition(), record.offset(), new Date(record.timestamp()), record.key(), record.value()
-                    );
-                }
+                            r.topic(), r.partition(), r.offset(), new Date(r.timestamp()), r.key(), r.value()
+                    )
+                );
             }
 
         } catch (WakeupException e) {

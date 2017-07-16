@@ -55,7 +55,6 @@ public class ByteArrayConsumer implements StoppableRunnable {
 
         try {
 
-            KafkaMessage message;
             ConsumerRecords<Integer, byte[]> records;
 
             while (!shutdown.get()) {
@@ -66,15 +65,15 @@ public class ByteArrayConsumer implements StoppableRunnable {
                     LOGGER.info("Number of Records = " + records.count());
                 }
 
-                for (ConsumerRecord<Integer, byte[]> record : records) {
+                records.forEach( r -> {
 
-                    message = (KafkaMessage) SerializationUtils.deserialize(record.value());
+                    KafkaMessage message = (KafkaMessage) SerializationUtils.deserialize(r.value());
 
                     LOGGER.info(
                             "Received message: topic = {}, partition = {}, offset = {}, timestamp = {} \n Received message({},{}) ",
-                            record.topic(), record.partition(), record.offset(), new Date(record.timestamp()), record.key(), message
+                            r.topic(), r.partition(), r.offset(), new Date(r.timestamp()), r.key(), message
                     );
-                }
+                });
             }
 
         } catch (WakeupException e) {

@@ -61,13 +61,12 @@ public class SimpleConsumer implements StoppableRunnable {
                     LOGGER.info("Number of Records = " + records.count());
                 }
 
-                for (ConsumerRecord<Integer, String> record : records) {
-
+                records.forEach( r ->
                     LOGGER.info(
                             "Received message: topic = {}, partition = {}, offset = {}, timestamp = {} \n Received message({},{}) ",
-                            record.topic(), record.partition(), record.offset(), new Date(record.timestamp()), record.key(), record.value()
-                    );
-                }
+                            r.topic(), r.partition(), r.offset(), new Date(r.timestamp()), r.key(), r.value()
+                    )
+                );
             }
 
         } catch (WakeupException e) {
