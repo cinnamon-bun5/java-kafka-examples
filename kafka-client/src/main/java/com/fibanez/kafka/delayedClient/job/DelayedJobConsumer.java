@@ -77,7 +77,8 @@ public class DelayedJobConsumer implements InterruptableJob {
                 consumer.close(2, TimeUnit.SECONDS);
             }
         } else {
-            consumer.wakeup();
+//            consumer.wakeup();
+            consumer.close(2, TimeUnit.SECONDS);
         }
 
     }

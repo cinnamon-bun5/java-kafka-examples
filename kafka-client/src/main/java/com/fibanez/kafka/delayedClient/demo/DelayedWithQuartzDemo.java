@@ -29,7 +29,7 @@ public class DelayedWithQuartzDemo {
 
         try {
             DelayedWithQuartzDemo demo = new DelayedWithQuartzDemo();
-            demo.start("byteArrayDelayedDemo", true);
+            demo.start("delayedDemo", true);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (SchedulerException e) {

@@ -1,5 +1,6 @@
 package com.fibanez.kafka.delayedClient.quartz;
 
+import com.fibanez.kafka.utils.StoppableRunnable;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -8,6 +9,7 @@ import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -18,13 +20,13 @@ public class ShutDownListener implements JobListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ShutDownListener.class);
 
-    private KafkaProducer producer;
     private ExecutorService executor;
+    private List< ? extends StoppableRunnable> runnables;
     private String name;
 
-    public ShutDownListener(ExecutorService executor, KafkaProducer runnable, String name) {
+    public ShutDownListener(ExecutorService executor, List< ? extends StoppableRunnable> runnables, String name) {
         this.executor = executor;
-        this.producer = runnable;
+        this.runnables = runnables;
         this.name = name;
     }
 
@@ -49,7 +51,7 @@ public class ShutDownListener implements JobListener {
             if (context.getNextFireTime() == null && context.getScheduler().getCurrentlyExecutingJobs().size() == 1) {
                 context.getScheduler().shutdown();
 
-                producer.close(5, TimeUnit.SECONDS);
+                runnables.forEach( r -> r.shutdown() );
 
                 try {
                     executor.shutdown();

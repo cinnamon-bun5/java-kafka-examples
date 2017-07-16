@@ -63,8 +63,8 @@ public class SimpleDemo {
         finally {
             if (!executor.isTerminated()) {
                 LOGGER.error("cancel non-finished tasks");
+                executor.shutdownNow();
             }
-            executor.shutdownNow();
             LOGGER.info("shutdown finished");
         }
 

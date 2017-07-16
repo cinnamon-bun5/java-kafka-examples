@@ -50,7 +50,6 @@ public class ByteArrayDemo {
 
         LOGGER.info("Finished byte array demo");
 
-
         System.exit(0);
     }
 
@@ -65,8 +64,8 @@ public class ByteArrayDemo {
         finally {
             if (!executor.isTerminated()) {
                 LOGGER.error("cancel non-finished tasks");
+                executor.shutdownNow();
             }
-            executor.shutdownNow();
             LOGGER.info("shutdown finished");
         }
 
