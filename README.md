@@ -14,11 +14,11 @@ Avro messages
 
 * run Zookeeper
 ```
-  > bin/zookeeper-server-start.sh config/zookeeper.properties
+  > ./bin/zookeeper-server-start.sh config/zookeeper.properties
 ```
 * run Kafka server
 ```
-  > bin/kafka-server-start.sh config/server.properties
+  > ./bin/kafka-server-start.sh config/server.properties
 ```
 * run Schema Registry (optional)
 ```
