@@ -35,32 +35,32 @@ Avro messages
 * [Simple Demo](../master/kafka-client/src/main/java/com/fibanez/kafka/client/demo/SimpleDemo.java)
 ```
   > cd kafka-client/target
-  >  java -cp kafka-client-1.0-SNAPSHOT-jar-with-dependencies.jar com.fibanez.kafka.client.demo.SimpleDemo
+  > java -cp kafka-client-1.0-SNAPSHOT-jar-with-dependencies.jar com.fibanez.kafka.client.demo.SimpleDemo
 ```
 * [ByteArray Message Demo](../master/kafka-client/src/main/java/com/fibanez/kafka/client/demo/ByteArrayDemo.java)
 ```
   > cd kafka-client/target
-  >  java -cp kafka-client-1.0-SNAPSHOT-jar-with-dependencies.jar com.fibanez.kafka.client.demo.ByteArrayDemo
+  > java -cp kafka-client-1.0-SNAPSHOT-jar-with-dependencies.jar com.fibanez.kafka.client.demo.ByteArrayDemo
 ```
 * [Avro Message Demo](../master/kafka-client/src/main/java/com/fibanez/kafka/avro/demo/AvroDemo.java) (requires Schema Registry)
 ```
   > cd kafka-client/target
-  >  java -cp kafka-client-1.0-SNAPSHOT-jar-with-dependencies.jar com.fibanez.kafka.avro.demo.AvroDemo
+  > java -cp kafka-client-1.0-SNAPSHOT-jar-with-dependencies.jar com.fibanez.kafka.avro.demo.AvroDemo
 ```
 * [Delayed message Demo with ScheduledExecutorService](../master/kafka-client/src/main/java/com/fibanez/kafka/delayedClient/demo/DelayedDemo.java)
 ```
   > cd kafka-client/target
-  >  java -cp kafka-client-1.0-SNAPSHOT-jar-with-dependencies.jar com.fibanez.kafka.delayedClient.demo.DelayedDemo
+  > java -cp kafka-client-1.0-SNAPSHOT-jar-with-dependencies.jar com.fibanez.kafka.delayedClient.demo.DelayedDemo
 ```
 * [Delayed message Demo with Quartz](../master/kafka-client/src/main/java/com/fibanez/kafka/delayedClient/demo/DelayedWithQuartzDemo.java)
 ```
   > cd kafka-client/target
-  >  java -cp kafka-client-1.0-SNAPSHOT-jar-with-dependencies.jar com.fibanez.kafka.delayedClient.demo.DelayedWithQuartzDemo
+  > java -cp kafka-client-1.0-SNAPSHOT-jar-with-dependencies.jar com.fibanez.kafka.delayedClient.demo.DelayedWithQuartzDemo
 ```
 * [Stream DSL](../master/kafka-stream/src/main/java/com/fibanez/kafka/streamDSL/wordCount/demo/WorldCountLambdaDemo.java)
 ```
   > cd kafka-stream/target
-  >  java -cp kafka-client-1.0-SNAPSHOT-jar-with-dependencies.jar com.fibanez.kafka.streamDSL.wordCount.demo.WorldCountLambdaDemo
+  > java -cp kafka-client-1.0-SNAPSHOT-jar-with-dependencies.jar com.fibanez.kafka.streamDSL.wordCount.demo.WorldCountLambdaDemo
 ```
 
 
