@@ -19,7 +19,7 @@ public class DelayedDemo {
     private static final Logger LOGGER = LoggerFactory.getLogger(DelayedDemo.class);
 
     private ExecutorService executor = Executors.newSingleThreadExecutor();
-    private ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(2);
+    private ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(1);
 
     public static void main(String[] args) {
 
